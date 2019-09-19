@@ -9,11 +9,11 @@ import $ from 'jquery';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  private serverUrl = 'http://localhost:8080/socket';
+  private serverUrl = 'http://localhost:8080/ws';
   private stompClient;
   title = 'WebSockets chat';
 
-  constructor(){
+  constructor() {
     this.initializeWebSocketConnection();
   }
 
@@ -22,17 +22,16 @@ export class AppComponent {
     this.stompClient = Stomp.over(ws);
     const that = this;
     this.stompClient.connect({}, function(frame) {
-      that.stompClient.subscribe('/chat', (message) => {
+      that.stompClient.subscribe('/topic/notification', (message) => {
         if (message.body) {
           $('.chat').append("<div class='message'>" + message.body + "</div>")
-          console.log(message.body);
+          console.log(message);
         }
       });
     });
   }
 
-  sendMessage(message) {
-    this.stompClient.send("/app/send/message" , {}, message);
-    $('#input').val('');
+  joinGame() {
+    this.stompClient.send("/app/game/join" , {});
   }
 }
